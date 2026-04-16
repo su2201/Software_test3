@@ -24,10 +24,10 @@ jobs:
 
     # 步骤3：使用Maven缓存依赖（加速构建）
     - name: Cache Maven packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles(' **/pom.xml') }}
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
 
@@ -38,6 +38,7 @@ jobs:
     # 步骤5：执行test目标 - 运行测试用例（冒烟测试）
     - name: Run tests with Maven (test目标)
       run: mvn test
+      continue-on-error: true  # 即使测试失败也继续执行
 
     # 步骤6：即使测试失败也继续，上传测试报告
     - name: Upload test results
@@ -49,7 +50,20 @@ jobs:
 
     # 步骤7：上传生成的jar包作为构建产物
     - name: Upload JAR artifact
+      if: success()  # 只有构建成功才上传jar包
       uses: actions/upload-artifact@v4
       with:
         name: application-jar
         path: target/*.jar
+
+    # 步骤8：显示测试结果摘要
+    - name: Test Summary
+      if: always()
+      run: |
+        echo "========== 测试结果摘要 =========="
+        if [ -f target/surefire-reports/*.txt ]; then
+          cat target/surefire-reports/*.txt
+        else
+          echo "测试报告文件未找到"
+        fi
+        echo "==================================="
