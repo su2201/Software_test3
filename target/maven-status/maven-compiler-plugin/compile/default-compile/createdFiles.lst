@@ -1,0 +1,4 @@
+org\apache\commons\numbers\combinatorics\BinomialCoefficient.class
+org\apache\commons\numbers\core\ArithmeticUtils$NumbersArithmeticException.class
+org\apache\commons\numbers\core\ArithmeticUtils.class
+org\apache\commons\numbers\combinatorics\CombinatoricsException.class
